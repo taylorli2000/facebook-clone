@@ -1,5 +1,6 @@
 import { Router } from "express";
 import usersController from "./users.controller.js";
+import authCheckHandler from "../middleware/authCheckHandler.js";
 
 const usersRouter = Router();
 
@@ -10,7 +11,7 @@ usersRouter
 usersRouter
   .route("/:id")
   .get(usersController.getUser)
-  .delete(usersController.deleteUser)
-  .patch(usersController.patchUser);
+  .delete(authCheckHandler, usersController.deleteUser)
+  .patch(authCheckHandler, usersController.patchUser);
 
 export default usersRouter;

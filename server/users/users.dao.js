@@ -76,4 +76,23 @@ export default class usersDAO {
       throw err;
     }
   };
+  static getUser = async (email, password) => {
+    try {
+      const response = await users.findOne(
+        {
+          email: email,
+          password: password,
+        },
+        {
+          projection: { username: 1 },
+        }
+      );
+      if (response === null) {
+        throw new usersError("Incorrect email or password", 404);
+      }
+      return { id: response._id, username: response.username };
+    } catch (err) {
+      throw err;
+    }
+  };
 }

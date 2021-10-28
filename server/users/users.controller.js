@@ -31,7 +31,7 @@ export default class usersController {
   };
   static deleteUser = async (req, res, next) => {
     try {
-      const response = await usersDAO.deleteUser(req.params.id);
+      const response = await usersDAO.deleteUser(req.user.id);
       return res.status(200).json(response);
     } catch (err) {
       return next(err);
@@ -39,7 +39,7 @@ export default class usersController {
   };
   static patchUser = async (req, res, next) => {
     try {
-      const response = await usersDAO.patchUser(req.params.id, req.body);
+      const response = await usersDAO.patchUser(req.user.id, req.body);
       return res.status(200).json(response);
     } catch (err) {
       return next(err);
