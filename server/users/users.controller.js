@@ -29,4 +29,12 @@ export default class usersController {
       return next(err);
     }
   };
+  static deleteUser = async (req, res, next) => {
+    try {
+      const response = await usersDAO.deleteUser(req.params.id);
+      return res.status(200).json(response);
+    } catch (err) {
+      return next(err);
+    }
+  };
 }

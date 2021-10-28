@@ -35,7 +35,7 @@ export default class usersDAO {
       }
       const userDoc = new User(username, email, password);
       const response = await users.insertOne(userDoc);
-      return { success: response.acknowledged };
+      return { success: true };
     } catch (err) {
       throw err;
     }
@@ -47,6 +47,17 @@ export default class usersDAO {
         throw new usersError("This user doesn't exist.", 404);
       }
       return { user: response };
+    } catch (err) {
+      throw err;
+    }
+  };
+  static deleteUser = async (id) => {
+    try {
+      const response = await users.deleteOne({ _id: ObjectId(id) });
+      if (response.deletedCount) {
+        return { success: true };
+      }
+      throw new usersError("Failed to delete user.", 404);
     } catch (err) {
       throw err;
     }

@@ -7,6 +7,9 @@ usersRouter
   .route("/")
   .get(usersController.getAllUsers)
   .post(usersController.postUser);
-usersRouter.route("/:id").get(usersController.getUser);
+usersRouter
+  .route("/:id")
+  .get(usersController.getUser)
+  .delete(usersController.deleteUser);
 
 export default usersRouter;
