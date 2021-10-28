@@ -9,21 +9,9 @@ export default class usersController {
       return next(err);
     }
   };
-  static postUser = async (req, res, next) => {
+  static getUserById = async (req, res, next) => {
     try {
-      const response = await usersDAO.postUser(
-        req.body.username,
-        req.body.email,
-        req.body.password
-      );
-      return res.status(200).json(response);
-    } catch (err) {
-      return next(err);
-    }
-  };
-  static getUser = async (req, res, next) => {
-    try {
-      const response = await usersDAO.getUser(req.params.id);
+      const response = await usersDAO.getUserById(req.params.id);
       return res.status(200).json(response);
     } catch (err) {
       return next(err);
@@ -31,7 +19,7 @@ export default class usersController {
   };
   static deleteUser = async (req, res, next) => {
     try {
-      const response = await usersDAO.deleteUser(req.user.id);
+      const response = await usersDAO.deleteUser(req.user._id);
       return res.status(200).json(response);
     } catch (err) {
       return next(err);
@@ -39,7 +27,23 @@ export default class usersController {
   };
   static patchUser = async (req, res, next) => {
     try {
-      const response = await usersDAO.patchUser(req.user.id, req.body);
+      const response = await usersDAO.patchUser(req.user._id, req.body);
+      return res.status(200).json(response);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  static postFriend = async (req, res, next) => {
+    try {
+      const response = await usersDAO.postFriend(req.user.id, req.body.id);
+      return res.status(200).json(response);
+    } catch (err) {
+      return next(err);
+    }
+  };
+  static deleteFriend = async (req, res, next) => {
+    try {
+      const response = await usersDAO.deleteFriend(req.user.id, req.body.id);
       return res.status(200).json(response);
     } catch (err) {
       return next(err);

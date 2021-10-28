@@ -7,11 +7,11 @@ const usersRouter = Router();
 usersRouter
   .route("/")
   .get(usersController.getAllUsers)
-  .post(usersController.postUser);
-usersRouter
-  .route("/:id")
-  .get(usersController.getUser)
   .delete(authCheckHandler, usersController.deleteUser)
   .patch(authCheckHandler, usersController.patchUser);
-
+usersRouter.route("/:id").get(usersController.getUserById);
+usersRouter
+  .route("/friends")
+  .post(authCheckHandler, usersController.postFriend)
+  .delete(authCheckHandler, usersController.deleteFriend);
 export default usersRouter;

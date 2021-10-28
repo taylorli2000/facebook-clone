@@ -21,7 +21,9 @@ export default class usersDAO {
   };
   static getAllUsers = async () => {
     try {
-      const response = await users.find().toArray();
+      const response = await users
+        .find({}, { projection: { username: 1, friends: 1 } })
+        .toArray();
       return { users: response };
     } catch (err) {
       throw err;
@@ -40,9 +42,12 @@ export default class usersDAO {
       throw err;
     }
   };
-  static getUser = async (id) => {
+  static getUserById = async (id) => {
     try {
-      const response = await users.findOne({ _id: ObjectId(id) });
+      const response = await users.findOne(
+        { _id: ObjectId(id) },
+        { projection: { username: 1 } }
+      );
       if (response === null) {
         throw new usersError("This user doesn't exist.", 404);
       }
@@ -64,19 +69,22 @@ export default class usersDAO {
   };
   static patchUser = async (id, patches) => {
     try {
-      const response = await users.updateOne(
+      const response = await users.findOneAndUpdate(
         { _id: ObjectId(id) },
-        { $set: patches }
+        { $set: patches },
+        {
+          returnDocument: "after",
+        }
       );
-      if (response.modifiedCount) {
-        return { success: true };
+      if (response.value) {
+        return { user: response.value };
       }
       throw new usersError("Failed to update user.", 404);
     } catch (err) {
       throw err;
     }
   };
-  static getUser = async (email, password) => {
+  static getUserByEmailPassword = async (email, password) => {
     try {
       const response = await users.findOne(
         {
@@ -91,6 +99,47 @@ export default class usersDAO {
         throw new usersError("Incorrect email or password", 404);
       }
       return { id: response._id, username: response.username };
+    } catch (err) {
+      throw err;
+    }
+  };
+  static postFriend = async (id, friendId) => {
+    try {
+      const response = await this.getUserById(friendId);
+      const added = await users.findOneAndUpdate(
+        { _id: ObjectId(id) },
+        {
+          $push: {
+            friends: {
+              id: response.user._id,
+              username: response.user.username,
+            },
+          },
+        },
+        {
+          returnDocument: "after",
+        }
+      );
+      if (added.value) {
+        return { success: true };
+      }
+      throw new usersError("Failed to add friend.", 404);
+    } catch (err) {
+      throw err;
+    }
+  };
+  static deleteFriend = async (id, friendId) => {
+    try {
+      const response = await users.findOneAndUpdate(
+        { _id: ObjectId(id) },
+        {
+          $pull: { friends: { id: ObjectId(friendId) } },
+        }
+      );
+      if (response.lastErrorObject.updatedExisting) {
+        return { response };
+      }
+      throw new usersError("Failed to delete friend.", 404);
     } catch (err) {
       throw err;
     }
