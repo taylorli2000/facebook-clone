@@ -37,4 +37,12 @@ export default class usersController {
       return next(err);
     }
   };
+  static patchUser = async (req, res, next) => {
+    try {
+      const response = await usersDAO.patchUser(req.params.id, req.body);
+      return res.status(200).json(response);
+    } catch (err) {
+      return next(err);
+    }
+  };
 }

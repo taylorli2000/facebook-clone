@@ -62,4 +62,18 @@ export default class usersDAO {
       throw err;
     }
   };
+  static patchUser = async (id, patches) => {
+    try {
+      const response = await users.updateOne(
+        { _id: ObjectId(id) },
+        { $set: patches }
+      );
+      if (response.modifiedCount) {
+        return { success: true };
+      }
+      throw new usersError("Failed to update user.", 404);
+    } catch (err) {
+      throw err;
+    }
+  };
 }

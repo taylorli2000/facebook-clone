@@ -10,6 +10,7 @@ usersRouter
 usersRouter
   .route("/:id")
   .get(usersController.getUser)
-  .delete(usersController.deleteUser);
+  .delete(usersController.deleteUser)
+  .patch(usersController.patchUser);
 
 export default usersRouter;
