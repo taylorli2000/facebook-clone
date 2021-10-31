@@ -9,7 +9,7 @@ export default class authController {
         req.body.password
       );
       const token = Jwt.sign(response, process.env.JWT_SECRET);
-      res.json({ token: token });
+      return res.status(200).json({ token: token });
     } catch (err) {
       return next(err);
     }

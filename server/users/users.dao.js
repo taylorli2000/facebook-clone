@@ -22,7 +22,7 @@ export default class usersDAO {
   static getAllUsers = async () => {
     try {
       const response = await users
-        .find({}, { projection: { username: 1, friends: 1 } })
+        .find({}, { projection: { username: 1 } })
         .toArray();
       return { users: response };
     } catch (err) {
@@ -99,47 +99,6 @@ export default class usersDAO {
         throw new usersError("Incorrect email or password", 404);
       }
       return { id: response._id, username: response.username };
-    } catch (err) {
-      throw err;
-    }
-  };
-  static postFriend = async (id, friendId) => {
-    try {
-      const response = await this.getUserById(friendId);
-      const added = await users.findOneAndUpdate(
-        { _id: ObjectId(id) },
-        {
-          $push: {
-            friends: {
-              id: response.user._id,
-              username: response.user.username,
-            },
-          },
-        },
-        {
-          returnDocument: "after",
-        }
-      );
-      if (added.value) {
-        return { success: true };
-      }
-      throw new usersError("Failed to add friend.", 404);
-    } catch (err) {
-      throw err;
-    }
-  };
-  static deleteFriend = async (id, friendId) => {
-    try {
-      const response = await users.findOneAndUpdate(
-        { _id: ObjectId(id) },
-        {
-          $pull: { friends: { id: ObjectId(friendId) } },
-        }
-      );
-      if (response.lastErrorObject.updatedExisting) {
-        return { response };
-      }
-      throw new usersError("Failed to delete friend.", 404);
     } catch (err) {
       throw err;
     }

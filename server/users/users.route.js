@@ -10,8 +10,4 @@ usersRouter
   .delete(authCheckHandler, usersController.deleteUser)
   .patch(authCheckHandler, usersController.patchUser);
 usersRouter.route("/:id").get(usersController.getUserById);
-usersRouter
-  .route("/friends")
-  .post(authCheckHandler, usersController.postFriend)
-  .delete(authCheckHandler, usersController.deleteFriend);
 export default usersRouter;
