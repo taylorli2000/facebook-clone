@@ -1,59 +1,86 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   FormGroup,
   IconButton,
   InputAdornment,
+  Snackbar,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Signup } from "../Signup";
 import { useAuth } from "../../hooks/useAuth";
+import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useRouter } from "../../hooks/useRouter";
 
-export const Login = () => {
-  const { token, signin } = useAuth();
-  const { push } = useRouter();
+export const Settings = () => {
+  const token = useRequireAuth();
+  const { deleteUser, updateUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [showSignup, setShowSignup] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const usernameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const { push } = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await signin(
+    const response = await updateUser(
+      usernameRef.current.value,
       emailRef.current.value,
       passwordRef.current.value
     );
     if (response) {
-      push("/dashboard");
+      setShowSuccess((prev) => !prev);
     }
   };
-
-  useEffect(() => {
-    token && push("/dashboard");
-  }, [push, token]);
+  const handleDelete = async () => {
+    const response = await deleteUser();
+    if (response) {
+      push("/");
+    }
+  };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSuccess((prev) => !prev);
+  };
 
   return (
-    <Box
-      component="form"
-      noValidate
-      autoComplete="off"
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        flexGrow: 1,
-      }}
-    >
-      {(showSignup && <Signup setShowSignup={setShowSignup} />) || (
-        <>
+    <>
+      {token && (
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            flexGrow: 1,
+          }}
+        >
+          <Snackbar
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            open={showSuccess}
+            autoHideDuration={5000}
+            onClose={handleClose}
+          >
+            <Alert
+              onClose={handleClose}
+              severity="success"
+              sx={{ width: "100%" }}
+            >
+              Account updated successfully!
+            </Alert>
+          </Snackbar>
           <Typography variant="h6" gutterBottom component="div">
-            Login
+            Settings
           </Typography>
           <FormGroup
             sx={{
@@ -64,6 +91,13 @@ export const Login = () => {
             }}
           >
             <Stack spacing={2} direction="column">
+              <TextField
+                id="username"
+                label="Username"
+                variant="outlined"
+                type="text"
+                inputRef={usernameRef}
+              />
               <TextField
                 id="email"
                 label="Email"
@@ -100,24 +134,19 @@ export const Login = () => {
                   onClick={handleSubmit}
                 >
                   <Typography variant="button" display="block">
-                    SIGN IN
+                    SAVE
                   </Typography>
                 </Button>
-                <Button
-                  variant="text"
-                  onClick={() => {
-                    setShowSignup((prev) => !prev);
-                  }}
-                >
+                <Button variant="text" color="warning" onClick={handleDelete}>
                   <Typography variant="button" display="block">
-                    SIGN UP
+                    DELETE ACCOUNT
                   </Typography>
                 </Button>
               </Stack>
             </Stack>
           </FormGroup>
-        </>
+        </Box>
       )}
-    </Box>
+    </>
   );
 };

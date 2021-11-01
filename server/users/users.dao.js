@@ -29,19 +29,6 @@ export default class usersDAO {
       throw err;
     }
   };
-  static postUser = async (username, email, password) => {
-    try {
-      const existingUser = await users.findOne({ email: email });
-      if (existingUser) {
-        throw new usersError("This user already exists.", 409);
-      }
-      const userDoc = new User(username, email, password);
-      const response = await users.insertOne(userDoc);
-      return { success: true };
-    } catch (err) {
-      throw err;
-    }
-  };
   static getUserById = async (id) => {
     try {
       const response = await users.findOne(
@@ -52,6 +39,38 @@ export default class usersDAO {
         throw new usersError("This user doesn't exist.", 404);
       }
       return { user: response };
+    } catch (err) {
+      throw err;
+    }
+  };
+  static getUserByEmailPassword = async (email, password) => {
+    try {
+      const response = await users.findOne(
+        {
+          email: email,
+          password: password,
+        },
+        {
+          projection: { username: 1 },
+        }
+      );
+      if (response === null) {
+        throw new usersError("Incorrect email or password", 404);
+      }
+      return { id: response._id, username: response.username };
+    } catch (err) {
+      throw err;
+    }
+  };
+  static postUser = async (username, email, password) => {
+    try {
+      const existingUser = await users.findOne({ email: email });
+      if (existingUser) {
+        throw new usersError("This user already exists.", 409);
+      }
+      const userDoc = new User(username, email, password);
+      const response = await users.insertOne(userDoc);
+      return { success: true };
     } catch (err) {
       throw err;
     }
@@ -80,25 +99,6 @@ export default class usersDAO {
         return { user: response.value };
       }
       throw new usersError("Failed to update user.", 404);
-    } catch (err) {
-      throw err;
-    }
-  };
-  static getUserByEmailPassword = async (email, password) => {
-    try {
-      const response = await users.findOne(
-        {
-          email: email,
-          password: password,
-        },
-        {
-          projection: { username: 1 },
-        }
-      );
-      if (response === null) {
-        throw new usersError("Incorrect email or password", 404);
-      }
-      return { id: response._id, username: response.username };
     } catch (err) {
       throw err;
     }

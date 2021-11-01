@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Alert,
-  Box,
   Button,
   FormGroup,
   IconButton,
@@ -9,6 +8,7 @@ import {
   Snackbar,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
@@ -33,12 +33,10 @@ export const Signup = (props) => {
       setShowSuccess((prev) => !prev);
     }
   };
-
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-
     setShowSuccess((prev) => !prev);
   };
 
@@ -54,7 +52,9 @@ export const Signup = (props) => {
           Account created successfully!
         </Alert>
       </Snackbar>
-      <Box sx={{ fontWeight: "medium", mb: 1 }}>Sign up</Box>
+      <Typography variant="h6" gutterBottom component="div">
+        Sign up
+      </Typography>
       <FormGroup
         sx={{
           borderRadius: 1,
@@ -102,7 +102,9 @@ export const Signup = (props) => {
           />
           <Stack spacing={2} direction="row" justifyContent="flex-end">
             <Button variant="contained" type="submit" onClick={handleSubmit}>
-              SIGN UP
+              <Typography variant="button" display="block">
+                SIGN UP
+              </Typography>
             </Button>
             <Button
               variant="text"
@@ -110,7 +112,9 @@ export const Signup = (props) => {
                 setShowSignup((prev) => !prev);
               }}
             >
-              LOGIN
+              <Typography variant="button" display="block">
+                SIGN IN
+              </Typography>
             </Button>
           </Stack>
         </Stack>
