@@ -14,6 +14,7 @@ import {
 import { AccountCircle, Home, Message } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
 import { useRouter } from "../../hooks/useRouter";
+import { SearchBar } from "../SearchBar";
 
 export const AppBar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,18 +52,20 @@ export const AppBar = () => {
           edge="start"
           color="inherit"
           aria-label="home"
-          sx={{ mr: 2 }}
           onClick={() => {
             push("/");
           }}
         >
           <Home />
         </IconButton>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Facebook
-        </Typography>
+        {desktopSize && (
+          <Typography variant="h6" component="div">
+            Facebook
+          </Typography>
+        )}
         {token && (
           <>
+            <SearchBar />
             {!desktopSize && (
               <IconButton
                 size="large"
