@@ -2,6 +2,8 @@ import CssBaseline from "@mui/material/CssBaseline";
 import { Route, Switch } from "react-router-dom";
 import { Login } from "./components/Login";
 import { Dashboard } from "./components/Dashboard";
+import { Messages } from "./components/Messages";
+import { Profile } from "./components/Profile";
 import { Settings } from "./components/Settings";
 import { ThemeProvider, useTheme } from "@mui/material/styles";
 import { ProvideAuth } from "./hooks/useAuth";
@@ -28,6 +30,7 @@ function App() {
               sx={{
                 display: "flex",
                 flexDirection: "column",
+                alignItems: "center",
                 width: 1,
                 flexGrow: 1,
               }}
@@ -35,6 +38,12 @@ function App() {
               <Switch>
                 <Route path="/dashboard">
                   <Dashboard />
+                </Route>
+                <Route path="/messages">
+                  <Messages />
+                </Route>
+                <Route path="/profile">
+                  <Profile />
                 </Route>
                 <Route path="/settings">
                   <Settings />

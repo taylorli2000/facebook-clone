@@ -1,5 +1,5 @@
 import Jwt from "jsonwebtoken";
-import authError from "../auth/auth.error.js";
+import customError from "../error/customError.js";
 
 const authCheckHandler = (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -9,11 +9,10 @@ const authCheckHandler = (req, res, next) => {
   }
   try {
     const decoded = Jwt.verify(token, process.env.JWT_SECRET);
-    const { id, username } = decoded;
-    req.user = { id, username };
+    req.user = { _id: decoded };
     return next();
   } catch (err) {
-    throw new authError("Not authorized to access this route", 403);
+    throw new customError("Not authorized to access this route", 403);
   }
 };
 

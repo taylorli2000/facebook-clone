@@ -19,7 +19,7 @@ export const useAuth = () => {
 // Provider hook that creates auth object and handles state
 const useProvideAuth = () => {
   const [token, setToken] = useLocalStorage("token");
-
+  const [user, setUser] = useLocalStorage("user");
   // Wrap any methods we want to use making sure ...
   // ... to save the token to local storage.
   const signin = async (email, password) => {
@@ -35,7 +35,8 @@ const useProvideAuth = () => {
       body: JSON.stringify(user),
     });
     const data = await response.json();
-    if (data.token) {
+    if (data) {
+      setUser(data.user);
       setToken(data.token);
       return true;
     }
@@ -61,6 +62,7 @@ const useProvideAuth = () => {
   };
 
   const signout = () => {
+    setUser();
     setToken();
   };
 
@@ -78,8 +80,13 @@ const useProvideAuth = () => {
     }
   };
 
-  const updateUser = async (username, email, password) => {
-    const changes = { username: username, email: email, password: password };
+  const updateUser = async (username, email, password, picture) => {
+    const changes = {
+      username: username,
+      email: email,
+      password: password,
+      picture: picture,
+    };
     const response = await fetch(BASE_URL, {
       method: "PATCH",
       headers: {
@@ -89,13 +96,15 @@ const useProvideAuth = () => {
       body: JSON.stringify(changes),
     });
     const data = await response.json();
-    if (data.user) {
+    if (data) {
+      setUser(data.user);
       return true;
     }
   };
   // Return the token object and auth methods
   return {
     token,
+    user,
     signin,
     signup,
     signout,

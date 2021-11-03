@@ -60,7 +60,7 @@ export const Login = () => {
               borderRadius: 1,
               boxShadow: 2,
               p: 2,
-              width: { sm: 325, md: 375 },
+              width: { xs: 250, sm: 350, md: 450 },
             }}
           >
             <Stack spacing={2} direction="column">

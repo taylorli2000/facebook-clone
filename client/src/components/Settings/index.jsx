@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { PhotoCamera, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
 import { useRequireAuth } from "../../hooks/useRequireAuth";
 import { useRouter } from "../../hooks/useRouter";
@@ -24,18 +24,21 @@ export const Settings = () => {
   const usernameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const pictureRef = useRef();
   const { push } = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await updateUser(
-      usernameRef.current.value,
-      emailRef.current.value,
-      passwordRef.current.value
-    );
-    if (response) {
-      setShowSuccess((prev) => !prev);
-    }
+    // const response = await updateUser(
+    //   usernameRef.current.value,
+    //   emailRef.current.value,
+    //   passwordRef.current.value,
+    //   pictureRef.current.files[0]
+    // );
+    // if (response) {
+    //   setShowSuccess((prev) => !prev);
+    // }
+    console.log(pictureRef.current.files[0]);
   };
   const handleDelete = async () => {
     const response = await deleteUser();
@@ -87,10 +90,29 @@ export const Settings = () => {
               borderRadius: 1,
               boxShadow: 2,
               p: 2,
-              width: { sm: 325, md: 375 },
+              width: { xs: 250, sm: 350, md: 450 },
             }}
           >
             <Stack spacing={2} direction="column">
+              <label
+                htmlFor="contained-button-file"
+                style={{ alignSelf: "flex-start" }}
+              >
+                <input
+                  accept="image/*"
+                  id="contained-button-file"
+                  type="file"
+                  style={{ display: "none" }}
+                  ref={pictureRef}
+                />
+                <Button
+                  variant="contained"
+                  component="span"
+                  endIcon={<PhotoCamera />}
+                >
+                  PICTURE
+                </Button>
+              </label>
               <TextField
                 id="username"
                 label="Username"

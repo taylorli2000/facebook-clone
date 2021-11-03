@@ -1,6 +1,5 @@
 import { ObjectId } from "mongodb";
-import User from "./user.model.js";
-import usersError from "./users.error.js";
+import customError from "../error/customError.js";
 
 let users;
 
@@ -22,7 +21,17 @@ export default class usersDAO {
   static getAllUsers = async () => {
     try {
       const response = await users
-        .find({}, { projection: { username: 1 } })
+        .find({}, { projection: { password: 0 } })
+        .toArray();
+      return { users: response };
+    } catch (err) {
+      throw err;
+    }
+  };
+  static getAllUsersById = async (ids) => {
+    try {
+      const response = await users
+        .find({ _id: { $in: ids } }, { projection: { password: 0 } })
         .toArray();
       return { users: response };
     } catch (err) {
@@ -33,10 +42,10 @@ export default class usersDAO {
     try {
       const response = await users.findOne(
         { _id: ObjectId(id) },
-        { projection: { username: 1 } }
+        { projection: { password: 0 } }
       );
       if (response === null) {
-        throw new usersError("This user doesn't exist.", 404);
+        throw new customError("This user doesn't exist.", 404);
       }
       return { user: response };
     } catch (err) {
@@ -51,13 +60,15 @@ export default class usersDAO {
           password: password,
         },
         {
-          projection: { username: 1 },
+          projection: { password: 0 },
         }
       );
       if (response === null) {
-        throw new usersError("Incorrect email or password", 404);
+        throw new customError("Incorrect email or password", 404);
       }
-      return { id: response._id, username: response.username };
+      const _id = response._id.toString();
+      delete response._id;
+      return { _id: _id, user: response };
     } catch (err) {
       throw err;
     }
@@ -66,11 +77,14 @@ export default class usersDAO {
     try {
       const existingUser = await users.findOne({ email: email });
       if (existingUser) {
-        throw new usersError("This user already exists.", 409);
+        throw new customError("This user already exists.", 409);
       }
-      const userDoc = new User(username, email, password);
-      const response = await users.insertOne(userDoc);
-      return { success: true };
+      const response = await users.insertOne({
+        username: username,
+        email: email,
+        password: password,
+      });
+      return { success: true, insertedId: response.insertedId };
     } catch (err) {
       throw err;
     }
@@ -81,7 +95,7 @@ export default class usersDAO {
       if (response.deletedCount) {
         return { success: true };
       }
-      throw new usersError("Failed to delete user.", 404);
+      throw new customError("Failed to delete user.", 404);
     } catch (err) {
       throw err;
     }
@@ -93,12 +107,10 @@ export default class usersDAO {
         { $set: patches },
         {
           returnDocument: "after",
+          projection: { _id: 0, password: 0 },
         }
       );
-      if (response.value) {
-        return { user: response.value };
-      }
-      throw new usersError("Failed to update user.", 404);
+      return { user: response.value };
     } catch (err) {
       throw err;
     }
